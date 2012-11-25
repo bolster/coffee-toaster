@@ -1,0 +1,5 @@
+toast 'src'
+	expose: 'window'
+	httpfolder: ''
+	release: 'www/app.js'
+	debug: 'www/app-debug.js'
