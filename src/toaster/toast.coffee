@@ -88,6 +88,8 @@ class Toast
         # VENDORS
         vendors: params.vendors ? []
 
+        vendors_path: params.vendors_path ? ""
+
         # OPTIONS
         exclude: params.exclude ? []
         bare: params.bare ? false
@@ -106,6 +108,14 @@ class Toast
         config.vendors[i] = path.resolve v
       else
         config.vendors[i] = path.join @basepath, v
+
+    if config.vendors_path != ""
+      if (path.resolve config.vendors_path) is not (path.join @basepath, config.vendors_path)
+        config.vendors_path = path.resolve config.vendors_path
+      else
+        config.vendors_path = path.join @basepath, config.vendors_path
+    else
+      delete config['vendors_path']
 
     unless srcpath instanceof Object
       srcpath = path.resolve( path.join @basepath, srcpath )

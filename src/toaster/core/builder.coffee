@@ -20,6 +20,7 @@ class Builder
 
   constructor:(@toaster, @cli, @config)->
     @vendors = @config.vendors
+    @vendors_path = @config.vendors_path
 
     @bare = @config.bare
     @packaging = @config.packaging
@@ -155,6 +156,30 @@ class Builder
       watcher.on 'create', (FnUtil.proxy @on_fs_change, src, 'create')
       watcher.on 'change', (FnUtil.proxy @on_fs_change, src, 'change')
       watcher.on 'delete', (FnUtil.proxy @on_fs_change, src, 'delete')
+
+    # watch vendors folder
+    if @vendors_path != undefined and @vendors_path != ""
+      @watchers.push (vendorWatcher = fsu.watch @vendors_path, /.js$/m)
+      vendorWatcher.on 'create', (FnUtil.proxy @vendor_changed, @vendors_path, 'create')
+      vendorWatcher.on 'change', (FnUtil.proxy @vendor_changed, @vendors_path, 'change')
+      vendorWatcher.on 'delete', (FnUtil.proxy @vendor_changed, @vendors_path, 'delete')
+
+  vendor_changed: (src, ev, f) =>
+    now = ("#{new Date}".match /[0-9]{2}\:[0-9]{2}\:[0-9]{2}/)[0]
+
+    switch ev
+      when "create"
+        msg = "Vendor created at"
+      when "delete"
+        msg = "Vendor deleted at"
+      when "change"
+        msg = "Vendor changed at"
+
+    log "[#{now}] #{msg} #{f.location}".cyan
+
+    if @toaster.before_build is null or @toaster.before_build()
+      # rebuilds modules
+      @build()    
 
   on_fs_change:(src, ev, f)=>
 
