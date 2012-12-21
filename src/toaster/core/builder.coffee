@@ -7,7 +7,7 @@ class Builder
   fs = require 'fs'
   fsu = require 'fs-util'
   path = require 'path'
-  cs = require "coffee-script"
+  cs = require "iced-coffee-script"
   uglify = require("uglify-js").uglify
   uglify_parser = require("uglify-js").parser
 

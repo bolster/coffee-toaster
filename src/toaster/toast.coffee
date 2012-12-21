@@ -6,7 +6,7 @@ class Toast
   path = require "path"
   exec = (require "child_process").exec
   colors = require 'colors'
-  cs = require "coffee-script"
+  cs = require "iced-coffee-script"
 
   # variables
   builders: null

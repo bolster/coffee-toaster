@@ -5,7 +5,7 @@ class Script
   # requires
   fs = require "fs"
   path = require 'path'
-  cs = require "coffee-script"
+  cs = require "iced-coffee-script"
 
   ArrayUtil = toaster.utils.ArrayUtil
 
