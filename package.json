@@ -13,7 +13,7 @@
 
   "repository": {
     "type": "git",
-    "url": "http://github.com/serpentem/coffee-toaster"
+    "url": "http://github.com/bolster/coffee-toaster"
   },
 
   "bin": {"toaster" : "./bin/toaster"},
