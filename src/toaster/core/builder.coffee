@@ -23,6 +23,7 @@ class Builder
     @vendors_path = @config.vendors_path
 
     @bare = @config.bare
+    @iced_runtime = @config.iced_runtime
     @packaging = @config.packaging
     @expose = @config.expose
     @minify = @config.minify
@@ -277,7 +278,7 @@ class Builder
     output = (file.raw for file in @files).join "\n"
 
     # compiling
-    output = cs.compile output, {bare: @bare}
+    output = cs.compile output, {bare: @bare, runtime: @iced_runtime}
 
   compile_for_debug:()->
     release_path = path.dirname @debug
@@ -311,7 +312,7 @@ class Builder
 
       # writing file
       try
-        fs.writeFileSync absolute_path, cs.compile file.raw, {bare:@bare}
+        fs.writeFileSync absolute_path, cs.compile file.raw, {bare:@bare, runtime:@iced_runtime}
       catch err
         ## dont show nothing because the error was alreary shown
         ## in the compile rotine above

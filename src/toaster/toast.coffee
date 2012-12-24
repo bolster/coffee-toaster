@@ -96,6 +96,7 @@ class Toast
         packaging: params.packaging ? true
         expose: params.expose ? null
         minify: params.minify ? true
+        iced_runtime: params.iced_runtime ? 'node'
 
         # HTTP FOLDER / RELEASE / DEBUG
         httpfolder: params.httpfolder ? ""
