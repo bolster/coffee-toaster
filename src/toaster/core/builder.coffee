@@ -165,21 +165,23 @@ class Builder
       vendorWatcher.on 'delete', (FnUtil.proxy @vendor_changed, @vendors_path, 'delete')
 
   vendor_changed: (src, ev, f) =>
-    now = ("#{new Date}".match /[0-9]{2}\:[0-9]{2}\:[0-9]{2}/)[0]
+    setTimeout =>
+      now = ("#{new Date}".match /[0-9]{2}\:[0-9]{2}\:[0-9]{2}/)[0]
 
-    switch ev
-      when "create"
-        msg = "Vendor created at"
-      when "delete"
-        msg = "Vendor deleted at"
-      when "change"
-        msg = "Vendor changed at"
+      switch ev
+        when "create"
+          msg = "Vendor created at"
+        when "delete"
+          msg = "Vendor deleted at"
+        when "change"
+          msg = "Vendor changed at"
 
-    log "[#{now}] #{msg} #{f.location}".cyan
+      log "[#{now}] #{msg} #{f.location}".cyan
 
-    if @toaster.before_build is null or @toaster.before_build()
-      # rebuilds modules
-      @build()    
+      if @toaster.before_build is null or @toaster.before_build()
+        # rebuilds modules
+        @build()
+    , 500
 
   on_fs_change:(src, ev, f)=>
 
@@ -196,62 +198,64 @@ class Builder
     include &= !(new RegExp( item ).test fpath) for item in @exclude
     return unless include
 
-    # Titleize the type for use in the log messages bellow
-    type = StringUtil.titleize f.type
+    setTimeout =>
+      # Titleize the type for use in the log messages bellow
+      type = StringUtil.titleize f.type
 
-    # relative filepath (with alias, if informed)
-    relative_path = f.location.replace spath, falias
+      # relative filepath (with alias, if informed)
+      relative_path = f.location.replace spath, falias
 
-    # date for CLI notifications
-    now = ("#{new Date}".match /[0-9]{2}\:[0-9]{2}\:[0-9]{2}/)[0]
+      # date for CLI notifications
+      now = ("#{new Date}".match /[0-9]{2}\:[0-9]{2}\:[0-9]{2}/)[0]
 
-    # switch over created, deleted, updated and watching
-    switch ev
+      # switch over created, deleted, updated and watching
+      switch ev
 
-      # when a new file is created
-      when "create"
+        # when a new file is created
+        when "create"
 
-        # initiate file and adds it to the array
-        if f.type == "file"
-          # toaster/core/script
-          s = new Script @, spath, fpath, falias, @cli
-          @files.push s
+          # initiate file and adds it to the array
+          if f.type == "file"
+            # toaster/core/script
+            s = new Script @, spath, fpath, falias, @cli
+            @files.push s
 
-        # cli filepath
-        msg = "#{('New ' + f.type + ' created').bold}"
-        log "[#{now}] #{msg} #{f.location}".cyan
-
-      # when a file is deleted
-      when "delete"
-
-        # removes files from array
-        file = ArrayUtil.find @files, relative_path, "filepath"
-        return if file is null
-
-        @files.splice file.index, 1
-
-        # cli msg
-        msg = "#{(type + ' deleted, stop watching').bold}"
-        log "[#{now}] #{msg} #{f.location}".red
-
-      # when a file is updated
-      when "change"
-
-        # updates file information
-        file = ArrayUtil.find @files, relative_path, "filepath"
-
-        if file is null
-          warn "CHANGED FILE IS APPARENTLY NULL..."
-        else
-          file.item.getinfo()
-
-          # cli msg
-          msg = "#{(type + ' changed').bold}"
+          # cli filepath
+          msg = "#{('New ' + f.type + ' created').bold}"
           log "[#{now}] #{msg} #{f.location}".cyan
 
-    if @toaster.before_build is null or @toaster.before_build()
-      # rebuilds modules
-      @build()
+        # when a file is deleted
+        when "delete"
+
+          # removes files from array
+          file = ArrayUtil.find @files, relative_path, "filepath"
+          return if file is null
+
+          @files.splice file.index, 1
+
+          # cli msg
+          msg = "#{(type + ' deleted, stop watching').bold}"
+          log "[#{now}] #{msg} #{f.location}".red
+
+        # when a file is updated
+        when "change"
+
+          # updates file information
+          file = ArrayUtil.find @files, relative_path, "filepath"
+
+          if file is null
+            warn "CHANGED FILE IS APPARENTLY NULL..."
+          else
+            file.item.getinfo()
+
+            # cli msg
+            msg = "#{(type + ' changed').bold}"
+            log "[#{now}] #{msg} #{f.location}".cyan
+
+      if @toaster.before_build is null or @toaster.before_build()
+        # rebuilds modules
+        @build()
+    , 500
 
   compile:()->
     # validating syntax
