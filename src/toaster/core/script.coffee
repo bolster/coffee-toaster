@@ -17,6 +17,7 @@ class Script
   getinfo:( declare_ns = true )->
     # read file content and initialize dependencies and baseclasses array
     @raw = fs.readFileSync @realpath, "utf-8"
+    @compiled = null
     @dependencies_collapsed = []
     @baseclasses = []
 
