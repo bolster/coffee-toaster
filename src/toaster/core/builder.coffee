@@ -261,7 +261,7 @@ class Builder
     # validating syntax
     for file in @files
       try
-        cs.compile file.raw
+        file.compiled = cs.compile file.raw, {bare: @bare}
       # if there's some error
       catch err
 
@@ -278,10 +278,7 @@ class Builder
     @reorder()
 
     # merging everything
-    output = (file.raw for file in @files).join "\n"
-
-    # compiling
-    output = cs.compile output, {bare: @bare}
+    output = (file.compiled for file in @files).join "\n"
 
   compile_for_debug:()->
     release_path = path.dirname @debug
@@ -315,7 +312,12 @@ class Builder
 
       # writing file
       try
-        fs.writeFileSync absolute_path, cs.compile file.raw, {bare:@bare}
+        if file.compiled
+          compiled = file.compiled
+        else
+          compiled = cs.compile file.raw, {bare:@bare}
+          
+        fs.writeFileSync absolute_path, compiled
       catch err
         ## dont show nothing because the error was alreary shown
         ## in the compile rotine above
